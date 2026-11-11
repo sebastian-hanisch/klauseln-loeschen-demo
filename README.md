@@ -1,7 +1,6 @@
 # Klauseln löschen – Gedächtnis kostet Zugriffe – Streamlit-Demo
 
-<!-- TODO nach dem Deploy: direkt hierher den Live-Link setzen (Leerzeile davor und danach):
-**[→ Demo live ausprobieren](https://sebastianhanisch-klauseln-loeschen-demo.streamlit.app/)** -->
+**[→ Demo live ausprobieren](https://sebastianhanisch-klauseln-loeschen-demo.streamlit.app/)**
 
 Stück 5 der Linie **„SAT und Constraint Programming“** in der „Konzepte“-Reihe für die Website „Sebastian Hanisch – Operations Research und Machine Learning“. Vorgänger ist das Lernen von Konfliktklauseln (Stück 1, `konfliktlernen-demo`); die Kante ist ein **Fix**: Jeder Konflikt, der nicht auf Stufe 0 liegt, liefert eine gelernte Klausel (Einheitsklauseln werden als Belegung statt als Klausel gespeichert); ohne Löschen wächst der Bestand mit den Konflikten, und die Propagation besucht mehr Klauseln. Das Stück zeigt, was Löschen am Bestand und an den Lesezugriffen spart und was es kosten kann (Information: eine gelöschte Klausel kann ein zweites Mal gelernt werden, gezählt wird das nicht). Vehikel sind Zufalls-3-SAT und die 3-Färbung eines Zufallsgraphen (Aufträge auf drei Rampen); verwandt: `watched-literals-demo` (Lesezugriffe), `beweise-pruefen-demo` (Löschzeilen im Beweis), `neustarts-sat-demo`.
 
