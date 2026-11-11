@@ -15,6 +15,7 @@ import streamlit as st
 import klo_algorithm as A
 import klo_constants as C
 import klo_evaluation as E
+import klo_fortschritt as F
 import klo_messung as M
 import klo_scenario as S
 import klo_visualization as V
@@ -37,16 +38,6 @@ ANTEIL_ZEICHEN = {25: "¼", 50: "½", 75: "¾"}
 @st.cache_data(show_spinner=False)
 def _messung():
     return M.lade_messung()
-
-
-@st.cache_data(show_spinner=False)
-def _live(familie, n, seed, budget, abstand, anteil_prozent, grenze, regel):
-    return A.live_vergleich(familie, n, seed, budget, abstand or None, Fraction(anteil_prozent, 100), grenze, regel)
-
-
-@st.cache_data(show_spinner=False)
-def _live_messreihe(familie, n, formeln, budget, anteil_prozent, grenze, regel):
-    return M.messreihe(familie, n, range(formeln), C.LIVE_ABSTAENDE, budget, E.REFERENZ_SEEDS, haupt_regel=regel, anteil=Fraction(anteil_prozent, 100), grenze=grenze)
 
 
 def _tabelle(daten, spalten):
@@ -142,8 +133,8 @@ getattr(st, kind)(text)
 # --- Live-Lauf, immer sichtbar -------------------------------------------------------------------------------------------------------------
 
 st.markdown("## 🧮 Live-Aufgabe")
-with st.spinner("Löse die Aufgabe ohne und mit Löschen (bei großen Aufgaben dauert das einige Sekunden) …"):
-    live = _live(familie, int(n), int(seed), int(budget), int(abstand), int(anteil), int(grenze), regel)
+with F.fortschrittsbalken("Löse die Aufgabe ohne und mit Löschen, fertige Läufe") as melde:
+    live = F.live_vergleich(familie, int(n), int(seed), int(budget), int(abstand), int(anteil), int(grenze), regel, melde)
 o, m = live.ohne.stat, live.mit.stat
 antwort = {True: "erfüllbar", False: "unerfüllbar", None: "Budget erreicht"}
 st.caption(f"{M.FAMILIEN_NAMEN[familie]}, n = {live.n} (Zufalls-Seed {int(seed)}), {live.klauseln} Klauseln; Löschen {E.abstand_text(abstand)} ({E.regel_text(int(anteil), int(grenze), regel)}); Zahlen des Laufs mit Löschen; der Pfeil darunter ist die Differenz zum Lauf ohne Löschen.")
@@ -238,8 +229,8 @@ with tab3:
     live_f = cl2.slider("Formeln der Messreihe", *bounds("live_f_slider"), key="live_f_slider", help="Je Formel werden vier Abstände und fünf Läufe ohne Löschen mit anderen Löser-Seeds gerechnet.")
     schluessel = (familie, int(live_n), int(live_f), int(anteil), int(grenze), regel)
     if st.button("▶ Messreihe rechnen", key="live_rechnen"):
-        with st.spinner(f"Rechne {live_f} Formeln mit n = {live_n}, je Formel neun Läufe; das kann einige Sekunden bis Minuten dauern …"):
-            st.session_state["live_ergebnis"] = (schluessel, _live_messreihe(familie, int(live_n), int(live_f), C.LIVE_BUDGET, int(anteil), int(grenze), regel))
+        with F.fortschrittsbalken(f"Rechne {live_f} Formeln mit n = {live_n}, je Formel neun Läufe, fertige Formeln") as melde:
+            st.session_state["live_ergebnis"] = (schluessel, F.messreihe(familie, int(live_n), int(live_f), C.LIVE_BUDGET, int(anteil), int(grenze), regel, melde))
     erg = st.session_state.get("live_ergebnis")
     if erg is None or erg[0] != schluessel:
         st.info("Für diese Einstellung ist noch nichts gerechnet. Mit „Messreihe rechnen“ starten.")

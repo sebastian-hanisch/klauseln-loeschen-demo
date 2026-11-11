@@ -27,7 +27,7 @@ Die Formeln stehen im 📐-Expander der App. Der Kern der Löschrunde sind reine
 - **Vier Experimente** (Reiter): (1) die Löschrunde an der Handtabelle von Hand, mit wählbaren gesperrten Klauseln, Anteil, LBD-Grenze und Rangordnung; (2) eine Live-Aufgabe zweimal gelöst, ohne und mit Löschen, mit der Sägezahnlinie des Bestands und den kumulierten Lesezugriffen; (3) die Messreihe über Löschabstände 250, 500, 1 000, 2 000 und nie; (4) der Vergleich dreier Rangordnungen bei gleichem Anteil und gleichem Abstand.
 - **Eingefrorene Messung** `klo_messung.json` (vorgerechnet, nicht live; erzeugt von `tools/messung_klo.py`): je Familie 20 Formeln (Zufalls-Seeds 4000 bis 4019 des SplitMix64-Erzeugers), ein Lauf je Formel und Variante. Familien: Zufalls-3-SAT mit 175 Variablen und 746 Klauseln (m/n = 4,26, Konfliktbudget 60 000) und 3-Färbung eines Zufallsgraphen mit 300 Knoten und mittlerem Grad 4,5 (Konfliktbudget 30 000). Je Formel: fünf Löschabstände (Anteil ½, LBD-Grenze 2, Regel LBD), fünf weitere Läufe ohne Löschen mit zufälliger Anfangsaktivität (Löser-Seeds 1 bis 5) und zwei weitere Rangordnungen bei Abstand 500. Dazu die Wiederholung der Vormessung der Planung: Zufalls-3-SAT mit 200 Variablen, 8 Formeln, ohne Löschen sowie alle 500 und alle 2 000 Konflikte (Budget 200 000).
 - **Streubreite der Suche:** Der Median der Konflikte über die 20 Formeln wird für sechs Läufe ohne Löschen bestimmt (fester Start und fünf Löser-Seeds); das Band reicht vom kleinsten bis zum größten dieser sechs Mediane. Ein Konfliktvergleich mit Löschen gilt nur, wenn er aus dem Band herausführt; sonst steht „in den Konflikten ist kein Unterschied erkennbar“.
-- **Messreihe auf Knopfdruck** (Experiment 3): dieselbe Rechnung kleiner und live (n bis 120, bis 10 Formeln), mit den Einstellungen der Seitenleiste.
+- **Messreihe auf Knopfdruck** (Experiment 3): dieselbe Rechnung kleiner und live (n bis 120, bis 10 Formeln), mit den Einstellungen der Seitenleiste. Ein Fortschrittsbalken zählt die fertigen Formeln; jede Formel wird zwischengespeichert. Bei der Live-Aufgabe hängt der Lauf ohne Löschen nicht vom Löschabstand und den Regeln ab und wird allein zwischengespeichert: ändert sich nur das Löschen, rechnet die App nur den Lauf mit Löschen neu (`klo_fortschritt.py`, ohne Änderung der Rechnung).
 - **Gegenproben:** Antworten und Modelle gegen OR-Tools CP-SAT (nur in `requirements-dev.txt`, nie in der App); der Beweis eines Laufs mit Löschzeilen gegen einen unabhängigen einfachen RUP-Prüfer.
 
 ## Befunde (gemessen, keine Behauptungen)
@@ -80,7 +80,7 @@ Jede Zahl dieser Tabelle steht als Test in `tests/test_claims.py`; eine Teilmeng
 - **Kopien des Kerns:** `klo_rng.py`, `klo_instanzen.py`, `klo_cdcl.py` sind bis auf zwei Kopfzeilen und die Importe wörtlich gleich dem Kern (Kern-Version im Modulkopf); Regressionswerte: SplitMix64, Schubfach h = 4, 5, 6 mit 28 / 159 / 1 004 Konflikten (`tests/test_kern_kopien.py`). Eine Löschrunde mit den Standardwerten gleicht dem Kern-Löser.
 - **Claims:** jede Zahl der Tabelle „Befunde“ in `tests/test_claims.py`.
 - **Presets, Layout, Oberfläche:** vollständig und innerhalb der Reglergrenzen; Schnellstart oben in der Seitenleiste, fester Kopf, aktives Preset hervorgehoben, jede Änderung eines Reglers hebt die Markierung auf; AppTest-Rauchtest (jeder Button, jeder Regler am Minimum und Maximum), Footer, Laufzeit-Importe.
-- **Testzahl:** 142 Tests (`pytest --collect-only -q tests`).
+- **Testzahl:** 148 Tests (`pytest --collect-only -q tests`).
 
 ## Dateistruktur
 
@@ -97,6 +97,7 @@ Jede Zahl dieser Tabelle steht als Test in `tests/test_claims.py`; eine Teilmeng
 | `klo_scenario.py` | Handtabelle, Aufgaben |
 | `klo_evaluation.py` | Kennzahlen, Streubreite, Verdikte (reine Funktionen) |
 | `klo_constants.py` | Regler-Grenzen, feste Annahmen, Farben, Presets |
+| `klo_fortschritt.py` | Fortschrittsbalken und Zwischenspeicher für Live-Aufgabe und Messreihe (je Lauf bzw. Formel; keine eigene Rechnung) |
 | `klo_layout.py` | Fester Kopf (Stylesheet) |
 | `klo_presets.py` | Permalink (Begrenzen), Presets (Schnellstart in der Seitenleiste, aktives Preset hervorgehoben), Zufalls-Seed-Button |
 | `klo_visualization.py` | Plotly-Abbildungen (Achsen gesperrt) |
